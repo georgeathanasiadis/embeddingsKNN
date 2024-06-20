@@ -181,7 +181,7 @@ def perform_clustering_hierarchical(embedding_matrix, num_clusters):
         The resulting cluster labels for each node.
     """
     #perform hierarchical clustering using AgglomerativeClustering
-    agglomerative_clustering = AgglomerativeClustering(n_clusters=num_clusters, affinity='euclidean', linkage='ward')
+    agglomerative_clustering = AgglomerativeClustering(n_clusters=num_clusters, metric='euclidean', linkage='ward')
 
     #fit the model and predict clusters
     clusters = agglomerative_clustering.fit_predict(embedding_matrix)
