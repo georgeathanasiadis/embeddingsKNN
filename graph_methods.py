@@ -254,8 +254,8 @@ def print_clusters(clusters, num_clusters):
 def output_clusters(clusters, num_clusters):
     #output the clusters to a file
     with open("embeddings_print.txt", "w") as output_file:
-        for cluster_num in range(1, num_clusters + 1):
-            print(f'{cluster_num}: {list(np.where(clusters == cluster_num)[0])}')
+        for cluster_num in range(num_clusters):
+            print(f'{cluster_num + 1}: {list(np.where(clusters == cluster_num)[0])}')
             nodes_in_cluster = list(np.where(clusters == cluster_num)[0])
             output_file.write(f'{cluster_num}: {nodes_in_cluster}\n')
 
