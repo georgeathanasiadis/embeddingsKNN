@@ -244,11 +244,12 @@ def draw_graph(G):
     plt.title('Graph Visualization')
     plt.show()
 
+
 def print_clusters(clusters, num_clusters):
     #print the clusters on console
-    for cluster_num in range(1, num_clusters + 1):
+    for cluster_num in range(num_clusters):
         #print(f'Cluster {cluster_num}: {list(np.where(clusters == cluster_num)[0])}')
-        print(f'{cluster_num}: {list(np.where(clusters == cluster_num)[0])}')
+        print(f'{cluster_num + 1}: {list(np.where(clusters == cluster_num)[0])}')
 
 def output_clusters(clusters, num_clusters):
     #output the clusters to a file
