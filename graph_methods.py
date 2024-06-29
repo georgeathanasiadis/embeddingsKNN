@@ -55,6 +55,9 @@ def knn_graph_scalable(G, k):
     knn_graph = nx.Graph()
 
     for node in G.nodes():
+        knn_graph.add_node(node) #ensure no nodes are lost, in case they don't yield an edge.
+        
+    for node in G.nodes():
         bfs_queue = deque([(node, 0)])  #queue of tuples (node, distance)
         distances = {}  #dictionary to store distances
 
@@ -78,9 +81,6 @@ def knn_graph_scalable(G, k):
 
 def knn_graph_dynamic(G, percentage):
     knn_graph = nx.Graph()
-
-    for node in G.nodes():
-        knn_graph.add_node(node) #ensure no nodes are lost, in case they don't yield an edge.
 
     for node in G.nodes():
         #compute k as a percentage of the node's degree
