@@ -45,39 +45,39 @@ from heapq import heappush, heappop
 
 
 def knn_graph_scalable(G, k):
+    """
+    Create a kNN graph from the given unweighted NetworkX graph using an approximate BFS.
+
+    Parameters:
+    G (nx.Graph): The input graph.
+    k (int): The number of nearest neighbors based on hop count.
+
+    Returns:
+    nx.Graph: The kNN graph.
+    """
     knn_graph = nx.Graph()
 
     for node in G.nodes():
-        # Priority queue to maintain the closest k neighbors
-        pq = []
+        bfs_queue = deque([(node, 0)])  #queue of tuples (node, distance)
+        distances = {}  #dictionary to store distances
 
-        # Perform a BFS with a limit on the depth to ensure we find only the k-nearest neighbors
-        queue = deque([(node, 0)])
-        seen = {node}
+        while bfs_queue and len(distances) < k + 1:  # Include node itself
+            current, dist = bfs_queue.popleft()
+            if current not in distances:
+                distances[current] = dist
+                for neighbor in G.neighbors(current):
+                    if neighbor not in distances:
+                        bfs_queue.append((neighbor, dist + 1))
 
-        while queue:
-            current_node, depth = queue.popleft()
+        #get k-nearest neighbors based on the shortest distances
+        neighbors = sorted(distances.items(), key=lambda x: x[1])[:k + 1]
 
-            if current_node != node:
-                heappush(pq, (depth, current_node))
-                if len(pq) > k:
-                    heappop(pq)
-
-            if depth < k:
-                for neighbor in G.neighbors(current_node):
-                    if neighbor not in seen:
-                        seen.add(neighbor)
-                        queue.append((neighbor, depth + 1))
-
-        # Add the node itself to ensure it exists in the knn_graph
-        knn_graph.add_node(node)
-
-        # Add edges to the k-nearest neighbors
-        while pq:
-            _, nearest_neighbor = heappop(pq)
-            knn_graph.add_edge(node, nearest_neighbor)
+        for neighbor, hop_count in neighbors:
+            if neighbor != node:  # Exclude self-loops
+                knn_graph.add_edge(node, neighbor)
 
     return knn_graph
+
 
 def knn_graph_dynamic(G, percentage):
     knn_graph = nx.Graph()
@@ -94,6 +94,32 @@ def knn_graph_dynamic(G, percentage):
                 knn_graph.add_edge(node, neighbor)
             else:
                 knn_graph.add_node(node)
+    return knn_graph
+
+
+def knn_graph_dynamic_scalable(G, percentage):
+    """
+    Create a kNN graph from the given NetworkX graph where k is a percentage of each node's degree.
+    Since percentage < 1, only the immediate neighbors of each node are traversed for speed & scalability.
+    Parameters:
+    G (nx.Graph): The input graph.
+    k_percent (float): The percentage of each node's degree to use as k.
+
+    Returns:
+    nx.Graph: The kNN graph.
+    """
+    knn_graph = nx.Graph()
+
+    for node in G.nodes():
+        degree = G.degree[node]
+        k = max(1, int(percentage * degree))  #calculate k as a percentage of the node's degree
+
+        neighbors = sorted(G.neighbors(node), key=lambda x: G.degree(x), reverse=True)[:k]
+
+        for neighbor in neighbors:
+            if neighbor != node:  #exclude self-loops
+                knn_graph.add_edge(node, neighbor)
+
     return knn_graph
 
 ###################
