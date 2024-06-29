@@ -17,6 +17,7 @@ from networkx.algorithms.community import modularity
 from silhouette import silhouette_score_block
 
 
+
 ###################
 """
 kNN Graph generation methods:
@@ -38,10 +39,6 @@ def knn_graph(G, k):
             else:
                 knn_graph.add_node(node)
     return knn_graph
-
-
-import networkx as nx
-from heapq import heappush, heappop
 
 
 def knn_graph_scalable(G, k):
@@ -81,6 +78,10 @@ def knn_graph_scalable(G, k):
 
 def knn_graph_dynamic(G, percentage):
     knn_graph = nx.Graph()
+
+    for node in G.nodes():
+        knn_graph.add_node(node) #ensure no nodes are lost, in case they don't yield an edge.
+
     for node in G.nodes():
         #compute k as a percentage of the node's degree
         k = int(percentage * G.degree[node]) # int conversion - rounding
@@ -109,6 +110,9 @@ def knn_graph_dynamic_scalable(G, percentage):
     nx.Graph: The kNN graph.
     """
     knn_graph = nx.Graph()
+
+    for node in G.nodes():
+        knn_graph.add_node(node) #ensure no nodes are lost, in case they don't yield an edge.
 
     for node in G.nodes():
         degree = G.degree[node]
